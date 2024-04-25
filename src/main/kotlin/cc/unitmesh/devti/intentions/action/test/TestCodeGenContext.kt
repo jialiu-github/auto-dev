@@ -11,4 +11,5 @@ data class TestCodeGenContext(
     var sourceCode: String = "",
     var testClassName: String = "",
     var isNewFile: Boolean = true,
+    var ragContext: String = "",
 ) : TemplateContext
