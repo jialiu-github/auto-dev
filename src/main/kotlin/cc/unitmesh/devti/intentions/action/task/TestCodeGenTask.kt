@@ -106,7 +106,7 @@ class TestCodeGenTask(val request: TestCodeGenRequest) :
         }
 
         testPromptContext.isNewFile = testContext.isNewFile
-        testPromptContext.ragContext = CustomAgentUtil.getRAGContext(testPromptContext, project, logger)
+        testPromptContext.ragContext = CustomAgentUtil.getRAGContext(testPromptContext.sourceCode, project, logger)
 
         templateRender.context = testPromptContext
         val prompter = templateRender.renderTemplate(template)

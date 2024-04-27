@@ -2,7 +2,6 @@ package cc.unitmesh.devti.agent
 
 import cc.unitmesh.devti.agent.configurable.customAgentSetting
 import cc.unitmesh.devti.agent.model.CustomAgentConfig
-import cc.unitmesh.devti.intentions.action.test.TestCodeGenContext
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.flow.Flow
@@ -29,10 +28,9 @@ class CustomAgentUtil {
             return rags[0]
         }
 
-        fun getRAGContext(testPromptContext: TestCodeGenContext, project: Project, logger: Logger): String {
+        fun getRAGContext(query: String, project: Project, logger: Logger): String {
             val agent = loadRagApp(project, logger)
             if (agent != null) {
-                val query = testPromptContext.sourceCode
                 val stringFlow: Flow<String>? = CustomAgentExecutor(project).execute(query, agent)
                 if (stringFlow != null) {
                     val responseBuilder = StringBuilder()
