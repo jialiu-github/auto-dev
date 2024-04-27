@@ -2,9 +2,7 @@ package cc.unitmesh.devti.intentions.action.task
 
 import cc.unitmesh.devti.AutoDevBundle
 import cc.unitmesh.devti.AutoDevNotifications
-import cc.unitmesh.devti.agent.CustomAgentExecutor
-import cc.unitmesh.devti.agent.configurable.customAgentSetting
-import cc.unitmesh.devti.agent.model.CustomAgentConfig
+import cc.unitmesh.devti.agent.CustomAgentUtil
 import cc.unitmesh.devti.context.modifier.CodeModifierProvider
 import cc.unitmesh.devti.gui.chat.ChatActionType
 import cc.unitmesh.devti.intentions.action.test.TestCodeGenContext
@@ -31,8 +29,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiNameIdentifierOwner
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.decodeFromString
 
 
 class TestCodeGenTask(val request: TestCodeGenRequest) :
@@ -110,7 +106,7 @@ class TestCodeGenTask(val request: TestCodeGenRequest) :
         }
 
         testPromptContext.isNewFile = testContext.isNewFile
-        testPromptContext.ragContext = getRAGContext(testPromptContext)
+        testPromptContext.ragContext = CustomAgentUtil.getRAGContext(testPromptContext, project, logger)
 
         templateRender.context = testPromptContext
         val prompter = templateRender.renderTemplate(template)
@@ -139,41 +135,6 @@ class TestCodeGenTask(val request: TestCodeGenRequest) :
         }
     }
 
-    private fun getRAGContext(testPromptContext: TestCodeGenContext): String {
-        val agent = loadRagApp()
-        if (agent != null) {
-            val query = testPromptContext.sourceCode
-            val stringFlow: Flow<String>? = CustomAgentExecutor(project).execute(query, agent)
-            if (stringFlow != null) {
-                val responseBuilder = StringBuilder()
-                runBlocking {
-                    stringFlow.collect { string ->
-                        responseBuilder.append(string)
-                    }
-                }
-                return responseBuilder.toString()
-            }
-        }
-        return ""
-    }
-
-    //this is hard code should be refactoring
-    private fun loadRagApp(): CustomAgentConfig? {
-        val ragsJsonConfig = project.customAgentSetting.ragsJsonConfig
-        if (ragsJsonConfig.isEmpty()) return null
-
-        val rags = try {
-            Json.decodeFromString<List<CustomAgentConfig>>(ragsJsonConfig)
-        } catch (e: Exception) {
-            logger.warn("Failed to parse custom rag apps", e)
-            listOf()
-        }
-
-        if (rags.isEmpty()) {
-            return null;
-        }
-        return rags[0]
-    }
     override fun onThrowable(error: Throwable) {
         super.onThrowable(error)
         AutoDevStatusService.notifyApplication(AutoDevStatus.Error)
