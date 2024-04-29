@@ -7,6 +7,8 @@ import com.intellij.openapi.project.Project
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.decodeFromString
+
 
 //this is hard code should be refactoring
 class CustomAgentUtil {

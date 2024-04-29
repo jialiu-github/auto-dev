@@ -1,10 +1,12 @@
 package cc.unitmesh.idea.actions
 
 import cc.unitmesh.devti.AutoDevBundle
+import cc.unitmesh.devti.agent.CustomAgentUtil
 import cc.unitmesh.devti.intentions.action.base.ChatBaseIntention
 import cc.unitmesh.devti.llms.LlmFactory
 import cc.unitmesh.devti.provider.DevFlowProvider
 import cc.unitmesh.devti.gui.sendToChatPanel
+import cc.unitmesh.devti.intentions.action.task.TestCodeGenTask
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.Editor
@@ -52,6 +54,8 @@ class AutoCrudAction : ChatBaseIntention() {
         object : Task.Backgroundable(project, "Loading retained test failure", true) {
             override fun run(indicator: ProgressIndicator) {
                 indicator.fraction = 0.2
+                val ragContext = CustomAgentUtil.getRAGContext(selectedText, project, logger)
+                flowProvider.updateRagContext(ragContext)
 
                 indicator.text = AutoDevBundle.message("autocrud.generatingDtoAndEntity")
                 flowProvider.updateOrCreateDtoAndEntity(selectedText)

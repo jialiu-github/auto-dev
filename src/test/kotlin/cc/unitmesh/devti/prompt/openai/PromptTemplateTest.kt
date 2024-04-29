@@ -45,7 +45,7 @@ AC 1:  xxx
         val promptTemplate = PromptTemplate()
         val storyDetail = "用户故事：可以选择宝贝出行服务"
         val files: List<DtClass> = listOf(DtClass("TaxiController", emptyList()), DtClass("GpsController", emptyList()))
-        val result = promptTemplate.createEndpoint(storyDetail, files)
+        val result = promptTemplate.createEndpoint(storyDetail, files, ragContext)
         assertEquals(
             """你是一个资深的后端 CRUD 工程师，请根据下面的用户故事 和 Controller 列表。要求：
 

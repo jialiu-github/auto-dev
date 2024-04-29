@@ -48,3 +48,5 @@ public class {entityName} {
 // {entityList}
 ###
 
+相关业务介绍如下：
+{ragContext}

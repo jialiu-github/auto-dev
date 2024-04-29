@@ -33,3 +33,6 @@ public interface {xxxRepository} extends JpaRepository<{xxx}, Long> {
 ```java
 {controllerCode}
 ```
+
+相关业务介绍如下：
+{ragContext}

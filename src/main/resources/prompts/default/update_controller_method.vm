@@ -31,6 +31,9 @@ public {methodReturnType} {methodName}({methodParams}) {
 {storyDetail}
 ###
 
+相关业务介绍如下：
+{ragContext}
+
 你的代码：
 
 // {you should return CRUD method in here}

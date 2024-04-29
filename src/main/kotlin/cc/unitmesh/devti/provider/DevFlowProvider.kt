@@ -17,10 +17,16 @@ abstract class DevFlowProvider : LazyExtensionInstance<ContextPrompter>(), TaskF
     @Attribute("implementationClass")
     var implementationClass: String? = null
 
+    var ragContext: String? = null
+
     override fun getImplementationClassName(): String? = implementationClass
 
     override fun clarify(): String {
         return ""
+    }
+
+    fun updateRagContext(ragContext: String){
+        this.ragContext = ragContext
     }
 
     abstract fun initContext(kanban: Kanban?, aiRunner: LLMProvider, component: ChatCodingPanel, project: Project)

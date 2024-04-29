@@ -78,7 +78,7 @@ class JvmAutoDevFlow : DevFlowProvider() {
      */
     override fun updateOrCreateDtoAndEntity(storyDetail: String) {
         val files: List<DtClass> = processor.getAllModelFiles()
-        val promptText = promptTemplate.createDtoAndEntity(storyDetail, files)
+        val promptText = promptTemplate.createDtoAndEntity(storyDetail, files, this.ragContext)
 
         logger.info("needUpdateMethodForController prompt text: $promptText")
         val result = executePrompt(promptText)
@@ -94,7 +94,7 @@ class JvmAutoDevFlow : DevFlowProvider() {
     override fun fetchSuggestEndpoint(storyDetail: String): TargetEndpoint {
         val files: List<DtClass> = processor.getAllControllerFiles().map(DtClass.Companion::fromJavaFile)
         logger.info("start devti flow")
-        val promptText = promptTemplate.createEndpoint(storyDetail, files)
+        val promptText = promptTemplate.createEndpoint(storyDetail, files, ragContext)
         val targetEndpoint = executePrompt(promptText)
 
         val controller = matchControllerName(targetEndpoint)
@@ -155,7 +155,7 @@ class JvmAutoDevFlow : DevFlowProvider() {
 
         // 3. if serviceFile not exist used method, send service code to openai
         val finalPrompt = promptStrategy.advice(serviceFile, usedCode, noExistMethods)
-        val promptText = promptTemplate.updateServiceMethod(finalPrompt)
+        val promptText = promptTemplate.updateServiceMethod(finalPrompt, ragContext)
         val result = executePrompt(promptText)
         val services = parseCodeFromString(result)
         services.forEach { code ->
@@ -175,7 +175,7 @@ class JvmAutoDevFlow : DevFlowProvider() {
             }
         }
 
-        val promptText = promptTemplate.createServiceAndRepository(controllerCode)
+        val promptText = promptTemplate.createServiceAndRepository(controllerCode, ragContext)
 
         logger.info("createServiceAndController prompt text: $promptText")
         val result = executePrompt(promptText)
@@ -279,7 +279,7 @@ class JvmAutoDevFlow : DevFlowProvider() {
         val services = processor.getAllServiceFiles().map(DtClass.Companion::fromJavaFile)
 
         val promptText =
-            promptTemplate.createOrUpdateControllerMethod(clazz, storyDetail, models, services, isNewController)
+            promptTemplate.createOrUpdateControllerMethod(clazz, storyDetail, models, services, isNewController, ragContext)
         logger.info("needUpdateMethodForController prompt text: $promptText")
         return executePrompt(promptText)
     }
